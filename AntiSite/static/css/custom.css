@@ -1,0 +1,28 @@
+.card-header:hover {
+    background-color: #e9ecef;
+}
+
+.table-borderless th {
+    border-right: 1px solid #dfdfdf;
+}
+
+.table-borderless th:last-child {
+    border-right: none;
+}
+
+.table {
+    table-layout: fixed;
+    width: 150%;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+.content {
+    flex: 1 0 auto;
+}
+.footer {
+    flex: 0 0 auto;
+}
