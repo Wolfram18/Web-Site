@@ -68,6 +68,12 @@
 
 {% block content%}
 
+    <div class="row" style="background-color: rgba(255,255,184,.9)">
+      <div class="col-md-12">
+        <p class="lead my-3">Приносим свои извинения, но из-за 5-ти минутного ограничения на ожидание ответа от сервера форматированный вывод и смена алгоритма приведут к ошибке 504. <br> Мы уже занимаемся этой проблемой.</p>
+      </div>
+    </div>
+
   <form action="output" method="POST" enctype="multipart/form-data">{% csrf_token %}
     <div class="row">
       <div class="col-md-2">
