@@ -145,9 +145,6 @@ def compare_for_underline_text(shingles_main, canon_main_array, main_text_array,
 
 
 def main(shingle_len, main_text, format_out):
-    # import supporting.parser
-    # supporting.parser.main()
-
     russian_stopwords = generate_stopwords()
 
     cut_main_text = cut_end(cut_beginning(main_text))

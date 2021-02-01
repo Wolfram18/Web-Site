@@ -1,15 +1,17 @@
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
 
+from anti.models import Law
 import controllers.shingles
 import controllers.lsa
 import controllers.compare
-from anti.models import Law
 from controllers.search import get_law_by_title
 from supporting.parser import get_pdf_fitz
 
 
 def main(request):
+    # import supporting.parser
+    # supporting.parser.main()
     return render(request, "index.html")
 
 
