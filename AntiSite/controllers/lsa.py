@@ -5,12 +5,29 @@ import math
 from anti.models import Law
 from supporting.preprocessing import generate_stopwords, canonize, cut_end, cut_beginning, canonize_word
 
+iteration = 0
+
+
+def set_iteration():
+    global iteration
+    iteration = iteration + 1
+
+
+def delete_iteration():
+    global iteration
+    iteration = 0
+
+
+def get_iteration():
+    return iteration
+
 
 # словарь слов (ключ - слово, значение - индекс в векторе)
 def build_terms(documents):
     terms = {}
     current_index = 0
     for doc in documents:
+        set_iteration()
         for word in doc.split():
             if word not in terms:
                 terms[word] = current_index
@@ -106,6 +123,7 @@ def generate_list(canon_main):
     # матрица вхождения отдельных слов в документы
     tf_idf_total = []
     for document in documents:
+        set_iteration()
         tf_idf_total.append(build_tf_idf(documents, document, terms))
     # for doc_rating in tf_idf_total:
     #    print(doc_rating)
@@ -117,6 +135,7 @@ def generate_list(canon_main):
     query_tfidf = build_tf_idf(documents, canon_main, terms)
     for index, document in enumerate(tf_idf_total):
         # print("Similarity with DOC", titles[index], "=", cosine_similarity(query_tfidf, document))
+        set_iteration()
         top[index].append(titles[index])
         top[index].append(cosine_similarity(query_tfidf, document))
     top.sort(key=lambda x: x[1])
@@ -181,6 +200,7 @@ def compare_for_underline_text(canon_main_array, main_text_array, canon_cmp_arra
 
 
 def main(main_text, format_out):
+    delete_iteration()
     russian_stopwords = generate_stopwords()
 
     canon_main_array = canonize(cut_end(cut_beginning(main_text)), russian_stopwords)
@@ -195,6 +215,7 @@ def main(main_text, format_out):
     for i in range(7):
         top7.append([])
     for i in range(7):
+        set_iteration()
         law = Law.objects.get(title=top[len(top) - 1 - i][0])
         canon_cmp_array = law.canon.split()
         if format_out:
@@ -208,5 +229,8 @@ def main(main_text, format_out):
         top7[1].append(float("{0:.2f}".format(top[len(top) - 1 - i][1])))
         top7[2].append(result_str[0])
         top7[3].append(result_str[1])
+
+    global iteration
+    iteration = 0
 
     return top7

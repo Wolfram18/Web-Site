@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path
@@ -20,6 +21,7 @@ urlpatterns = [
     re_path(r'^semantic/', views.semantic),
     path('semantic_output', views.semantic_output, name="semantic_output"),
     re_path(r'^semantic_output/', views.semantic_output),
+    url(r'^semantic_bar/$', views.semantic_bar),
 
     path('comparison', views.comparison, name="comparison"),
     path('comparison.html', views.comparison),

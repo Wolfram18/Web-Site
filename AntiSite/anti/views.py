@@ -1,4 +1,5 @@
 from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from anti.models import Law
@@ -89,6 +90,11 @@ def semantic_output(request):
             return render(request, "semantic.html")
     else:
         return render(request, "semantic.html")
+
+
+def semantic_bar(request):
+    #return {"iteration": controllers.lsa.get_iteration()}
+    return HttpResponse(controllers.lsa.get_iteration())
 
 
 def search(request):

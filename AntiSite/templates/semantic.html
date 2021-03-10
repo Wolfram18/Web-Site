@@ -27,6 +27,8 @@
       }
     }
     </script>
+    <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 {% endblock head %}
 
 {% block navbar %}
@@ -68,7 +70,7 @@
 
 {% block content%}
 
-  <form action="semantic_output" method="POST" enctype="multipart/form-data">{% csrf_token %}
+  <form id="form" action="semantic_output" method="POST" enctype="multipart/form-data">{% csrf_token %}
     <div class="row mt-4 mb-4">
       <div class="col-md-6">
         <div class="form-file mb-4">
@@ -80,7 +82,7 @@
         </div>
       </div>
       <div class="col-md-3">
-        <button type="submit" id="form-submit" class="btn btn-outline-dark btn-block mb-4" onclick="location.href='{% url "semantic_output" %}'">Проверить</button>
+        <button type="submit" id="form-submit" class="btn btn-outline-dark btn-block mb-4">Проверить</button>
       </div>
       <div class="col-md-3">
           <div class="text-right">
@@ -127,7 +129,7 @@
                             <tbody>
                               <tr>
                                 <th scope="col"><h5 class="card-title mb-0 ml-2 text-dark">Схожий документ</h5></th>
-                                <th scope="col"><h5 class="card-title mb-0 ml-2 text-dark">1</h5></th>
+                                <th scope="col" id="barbarbar"><h5 class="card-title mb-0 ml-2 text-dark">1</h5></th>
                               </tr>
                             </tbody>
                         </table>
@@ -352,4 +354,18 @@
       skin: "flat"
     });
   </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $("#form-submit").click(function () {
+                setInterval('getBarPercent()', 5000);
+            });
+        });
+        function getBarPercent() {
+            $.get("/semantic_bar/")
+                .done(function (data) {
+                    $("#barbarbar").html(data)
+                });
+        }
+    </script>
 {% endblock js %}
