@@ -116,10 +116,9 @@ def remove_contents(my_path):
             shutil.rmtree(full_path)
 
 
-def check_updates():
+def check_updates(base_url):
     my_path = "supporting/data/"
-    main_url = 'https://sozd.duma.gov.ru/search?page_34F6AE40-BDF0-408A-A56E-E48511C6B618=1'
-    base_url = 'https://sozd.duma.gov.ru/search?page_34F6AE40-BDF0-408A-A56E-E48511C6B618='
+    main_url = base_url + '1'
     total_pages = get_total_count_of_pages(get_html(main_url))
 
     flag = True
@@ -164,10 +163,9 @@ def check_updates():
     remove_contents(my_path)
 
 
-def main():
+def main(base_url):
     my_path = "supporting/data/"
-    main_url = 'https://sozd.duma.gov.ru/search?page_34F6AE40-BDF0-408A-A56E-E48511C6B618=1'
-    base_url = 'https://sozd.duma.gov.ru/search?page_34F6AE40-BDF0-408A-A56E-E48511C6B618='
+    main_url = base_url + '1'
     total_pages = get_total_count_of_pages(get_html(main_url))
 
     for i in range(1, 10):
@@ -186,10 +184,12 @@ def main():
     file_names = get_file_names_from_dir(my_path)
     for k in range(0, len(file_names)):
         text = get_pdf_fitz(my_path + file_names[k])
+        text = delete_tag(text)
         canon_array = canonize(cut_end(cut_beginning(text)), russian_stopwords)
         canon_text = ""
         for z in range(0, len(canon_array)):
             canon_text += canon_array[z] + " "
+        canon_text = delete_irrelevant_words(canon_text)
         try:
             Law.objects.get(title=file_names[k].rstrip('.pdf'))
         except Law.DoesNotExist:

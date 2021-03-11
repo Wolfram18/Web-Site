@@ -42,6 +42,7 @@ urlpatterns = [
 
     path('admin', admin.site.urls),
     path('admin/', admin.site.urls),
+
     re_path(r'^', views.error404),
 ]
 

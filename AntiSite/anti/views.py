@@ -9,11 +9,17 @@ import controllers.compare
 from controllers.search import get_law_by_title
 from supporting.parser import get_pdf_fitz
 
+files = Law.objects.all()
+
 
 def main(request):
     # import supporting.parser
-    # supporting.parser.main()
-    files = Law.objects.all()
+    # для законопроектов
+    # base_url = 'https://sozd.duma.gov.ru/search?page_34F6AE40-BDF0-408A-A56E-E48511C6B618='
+    # для постановлений
+    # base_url = 'https://sozd.duma.gov.ru/search/pp?page_DB9B35BB-71F8-4F81-A51D-4FB2B026B913='
+    # supporting.parser.main(base_url)
+    # supporting.parser.check_updates(base_url)
     return render(request, "index.html", {"now_iteration": 0, "max_iteration": files.count() + 7})
 
 
@@ -44,7 +50,6 @@ def output(request):
                 percent = data[1]
                 result_str_main = data[2]
                 result_str_cmp = data[3]
-                files = Law.objects.all()
                 return render(request, "index.html",
                               {"title": title, "percent": percent, "result_str_main": result_str_main,
                                "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
@@ -62,7 +67,6 @@ def main_bar(request):
 
 
 def semantic(request):
-    files = Law.objects.all()
     return render(request, "semantic.html", {"now_iteration": 0, "max_iteration": 3 * files.count() + 7})
 
 
@@ -89,7 +93,6 @@ def semantic_output(request):
                 percent = data[1]
                 result_str_main = data[2]
                 result_str_cmp = data[3]
-                files = Law.objects.all()
                 return render(request, "semantic.html",
                               {"title": title, "percent": percent, "result_str_main": result_str_main,
                                "result_str_cmp": result_str_cmp, "format_out": format_out,

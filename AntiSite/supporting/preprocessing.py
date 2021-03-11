@@ -92,6 +92,14 @@ def delete_irrelevant_words(source):
     return source
 
 
+def delete_tag(source):
+    tags = ['</', '/>', '</>']
+    for tag in tags:
+        source = source.replace(tag, '')
+
+    return source
+
+
 def canonize_word(word):
     word = word.lower()
     spec_chars = string.punctuation + string.digits + '\n\r\t\xa0№«»—…„'
