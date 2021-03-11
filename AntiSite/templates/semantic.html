@@ -27,8 +27,6 @@
       }
     }
     </script>
-    <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 {% endblock head %}
 
 {% block navbar %}
@@ -92,6 +90,18 @@
     </div>
   </form>
 
+    <div class="row mb-5 pl-3 pr-3">
+        <div class="progress container-fluid p-0">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark"
+                 role="progressbar"
+                 id="progress"
+                 aria-valuenow="{{ now_iteration | safe}}"
+                 aria-valuemin="0"
+                 aria-valuemax="{{ max_iteration | safe}}">
+            </div>
+        </div>
+    </div>
+
     <div class="row">
       <div class="col-md-6 mb-4">
         <div class="card w-125">
@@ -129,7 +139,7 @@
                             <tbody>
                               <tr>
                                 <th scope="col"><h5 class="card-title mb-0 ml-2 text-dark">Схожий документ</h5></th>
-                                <th scope="col" id="barbarbar"><h5 class="card-title mb-0 ml-2 text-dark">1</h5></th>
+                                <th scope="col"><h5 class="card-title mb-0 ml-2 text-dark">1</h5></th>
                               </tr>
                             </tbody>
                         </table>
@@ -364,7 +374,9 @@
         function getBarPercent() {
             $.get("/semantic_bar/")
                 .done(function (data) {
-                    $("#barbarbar").html(data)
+                    var status = data;
+                    $("[aria-valuenow]").html(data);
+                    $('.progress-bar').css('width', status + '%');
                 });
         }
     </script>

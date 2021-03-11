@@ -13,7 +13,8 @@ from supporting.parser import get_pdf_fitz
 def main(request):
     # import supporting.parser
     # supporting.parser.main()
-    return render(request, "index.html")
+    files = Law.objects.all()
+    return render(request, "index.html", {"now_iteration": 0, "max_iteration": files.count() + 7})
 
 
 def output(request):
@@ -43,9 +44,11 @@ def output(request):
                 percent = data[1]
                 result_str_main = data[2]
                 result_str_cmp = data[3]
+                files = Law.objects.all()
                 return render(request, "index.html",
                               {"title": title, "percent": percent, "result_str_main": result_str_main,
-                               "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out})
+                               "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
+                               "now_iteration": files.count() + 7})
             except Exception:
                 return render(request, "index.html")
         else:
@@ -54,8 +57,13 @@ def output(request):
         return render(request, "index.html")
 
 
+def main_bar(request):
+    return HttpResponse(controllers.shingles.get_iteration())
+
+
 def semantic(request):
-    return render(request, "semantic.html")
+    files = Law.objects.all()
+    return render(request, "semantic.html", {"now_iteration": 0, "max_iteration": 3 * files.count() + 7})
 
 
 def semantic_output(request):
@@ -81,9 +89,11 @@ def semantic_output(request):
                 percent = data[1]
                 result_str_main = data[2]
                 result_str_cmp = data[3]
+                files = Law.objects.all()
                 return render(request, "semantic.html",
                               {"title": title, "percent": percent, "result_str_main": result_str_main,
-                               "result_str_cmp": result_str_cmp, "format_out": format_out})
+                               "result_str_cmp": result_str_cmp, "format_out": format_out,
+                               "now_iteration": 3 * files.count() + 7})
             except Exception:
                 return render(request, "semantic.html")
         else:
@@ -93,7 +103,6 @@ def semantic_output(request):
 
 
 def semantic_bar(request):
-    #return {"iteration": controllers.lsa.get_iteration()}
     return HttpResponse(controllers.lsa.get_iteration())
 
 

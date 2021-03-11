@@ -74,7 +74,7 @@
       </div>
     </div>
 
-  <form action="output" method="POST" enctype="multipart/form-data">{% csrf_token %}
+  <form id="form" action="output" method="POST" enctype="multipart/form-data">{% csrf_token %}
     <div class="row">
       <div class="col-md-2">
         <p class="lead my-3">Выберите точность сходства:</p>
@@ -94,7 +94,7 @@
         </div>
       </div>
       <div class="col-md-3">
-        <button type="submit" id="form-submit" class="btn btn-outline-dark btn-block mb-4" onclick="location.href='{% url "output" %}'">Проверить</button>
+        <button type="submit" id="form-submit" class="btn btn-outline-dark btn-block mb-4">Проверить</button>
       </div>
       <div class="col-md-3">
           <div class="text-right">
@@ -103,6 +103,18 @@
       </div>
     </div>
   </form>
+
+    <div class="row mb-5 pl-3 pr-3">
+        <div class="progress container-fluid p-0">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark"
+                 role="progressbar"
+                 id="progress"
+                 aria-valuenow="{{ now_iteration | safe}}"
+                 aria-valuemin="0"
+                 aria-valuemax="{{ max_iteration | safe}}">
+            </div>
+        </div>
+    </div>
 
     <div class="row">
       <div class="col-md-6 mb-4">
@@ -366,4 +378,20 @@
       skin: "flat"
     });
   </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            $("#form-submit").click(function () {
+                setInterval('getBarPercent()', 5000);
+            });
+        });
+        function getBarPercent() {
+            $.get("/main_bar/")
+                .done(function (data) {
+                    var status = data;
+                    $("[aria-valuenow]").html(data);
+                    $('.progress-bar').css('width', status + '%');
+                });
+        }
+    </script>
 {% endblock js %}

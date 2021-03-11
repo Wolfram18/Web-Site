@@ -83,6 +83,15 @@ def canonize(source, russian_stopwords):
     return source
 
 
+def delete_irrelevant_words(source):
+    line = open('supporting/irrelevant_words.txt', encoding='utf-8').read()
+    irrelevant_words = line.split('\n')
+    for word in irrelevant_words:
+        source = source.replace(word, '')
+
+    return source
+
+
 def canonize_word(word):
     word = word.lower()
     spec_chars = string.punctuation + string.digits + '\n\r\t\xa0№«»—…„'

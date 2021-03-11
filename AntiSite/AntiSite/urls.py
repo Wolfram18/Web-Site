@@ -15,13 +15,14 @@ urlpatterns = [
     path('output', views.output, name="output"),
     re_path(r'^output/', views.output),
     # re_path(r'^output', views.m404),
+    url(r'^main_bar/', views.main_bar),
 
     path('semantic', views.semantic, name="semantic"),
     path('semantic.html', views.semantic),
     re_path(r'^semantic/', views.semantic),
     path('semantic_output', views.semantic_output, name="semantic_output"),
     re_path(r'^semantic_output/', views.semantic_output),
-    url(r'^semantic_bar/$', views.semantic_bar),
+    url(r'^semantic_bar/', views.semantic_bar),
 
     path('comparison', views.comparison, name="comparison"),
     path('comparison.html', views.comparison),

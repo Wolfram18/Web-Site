@@ -19,6 +19,7 @@ def delete_iteration():
 
 
 def get_iteration():
+    global iteration
     return iteration
 
 
@@ -229,8 +230,5 @@ def main(main_text, format_out):
         top7[1].append(float("{0:.2f}".format(top[len(top) - 1 - i][1])))
         top7[2].append(result_str[0])
         top7[3].append(result_str[1])
-
-    global iteration
-    iteration = 0
 
     return top7

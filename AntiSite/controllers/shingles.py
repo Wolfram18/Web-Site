@@ -1,5 +1,23 @@
 from anti.models import Law
-from supporting.preprocessing import generate_stopwords, canonize, cut_end, cut_beginning, canonize_word
+from supporting.preprocessing import generate_stopwords, canonize, cut_end, cut_beginning, canonize_word, \
+    delete_irrelevant_words
+
+iteration = 0
+
+
+def set_iteration():
+    global iteration
+    iteration = iteration + 1
+
+
+def delete_iteration():
+    global iteration
+    iteration = 0
+
+
+def get_iteration():
+    global iteration
+    return iteration
 
 
 def generate_shingles(source, shingle_len):
@@ -32,7 +50,8 @@ def generate_list(shingles_main, shingle_len):
     for i in range(files.count()):
         top.append([])
     for i in range(files.count()):
-        cmp2 = generate_shingles(files[i].canon.split(), shingle_len)
+        set_iteration()
+        cmp2 = generate_shingles(delete_irrelevant_words(files[i].canon).split(), shingle_len)
         top[i].append(files[i].title)
         top[i].append(compare_shingles(shingles_main, cmp2))
     top.sort(key=lambda x: x[1])
@@ -145,6 +164,7 @@ def compare_for_underline_text(shingles_main, canon_main_array, main_text_array,
 
 
 def main(shingle_len, main_text, format_out):
+    delete_iteration()
     russian_stopwords = generate_stopwords()
 
     cut_main_text = cut_end(cut_beginning(main_text))
@@ -158,9 +178,10 @@ def main(shingle_len, main_text, format_out):
     for i in range(7):
         top7.append([])
     for i in range(7):
+        set_iteration()
         law = Law.objects.get(title=top[len(top) - 1 - i][0])
         canon_main_array = canonize(cut_main_text, russian_stopwords)
-        canon_cmp_array = law.canon.split()
+        canon_cmp_array = delete_irrelevant_words(law.canon).split()
         if format_out:
             text_cmp = law.text
             result_str = compare_for_underline_text(shingles_main, canon_main_array, main_text_array, canon_cmp_array,
