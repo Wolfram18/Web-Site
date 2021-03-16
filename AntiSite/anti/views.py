@@ -1,6 +1,8 @@
+import json
+
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from anti.models import Law
 import controllers.shingles
@@ -23,7 +25,7 @@ def main(request):
     return render(request, "index.html", {"now_iteration": 0, "max_iteration": files.count() + 7})
 
 
-def output(request):
+'''def output(request):
     if 'my_range' in request.POST:
         shingle_len = int(request.POST['my_range'])
     else:
@@ -57,6 +59,40 @@ def output(request):
             except Exception:
                 return render(request, "index.html")
         else:
+            return render(request, "index.html")
+    else:
+        return render(request, "index.html")'''
+
+
+def output(request):
+    shingle_len = int(request.POST.get('my_range', False))
+    value = request.POST.get('switch_1', False)
+    if value == "on":
+        format_out = True
+    else:
+        format_out = False
+    if request.method == 'POST':
+        custom_file = request.FILES.get('customFile', False)
+    if bool(custom_file):
+        fs = FileSystemStorage()
+        filename = fs.save(custom_file.name, custom_file)
+        open_file = fs.open(filename, 'rb')
+        try:
+            main_text = get_pdf_fitz(open_file)
+            data = controllers.shingles.main(shingle_len, main_text, format_out)
+            title = data[0]
+            percent = data[1]
+            result_str_main = data[2]
+            result_str_cmp = data[3]
+            json_string = json.dumps({"title": title, "percent": percent, "result_str_main": result_str_main,
+                           "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
+                           "now_iteration": files.count() + 7})
+            return HttpResponse(json_string, content_type="application/json")
+            # return render(request, "index.html",
+            #               {"title": title, "percent": percent, "result_str_main": result_str_main,
+            #                "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
+            #                "now_iteration": files.count() + 7})
+        except Exception:
             return render(request, "index.html")
     else:
         return render(request, "index.html")
