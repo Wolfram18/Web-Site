@@ -70,23 +70,27 @@
 
     <div class="row" style="background-color: rgba(255,255,184,.9)">
       <div class="col-md-12">
-        <p class="lead my-3">Приносим свои извинения, но из-за 5-ти минутного ограничения на ожидание ответа от сервера форматированный вывод и смена алгоритма приведут к ошибке 504. <br> Мы уже занимаемся этой проблемой.</p>
+        <p id="sorry" class="lead my-3">Приносим свои извинения, но из-за 5-ти минутного ограничения на ожидание ответа от сервера форматированный вывод и смена алгоритма приведут к ошибке 504. <br> Мы уже занимаемся этой проблемой.</p>
       </div>
     </div>
 
-  <form id="form" action="output" method="POST" enctype="multipart/form-data">{% csrf_token %}
+    <div class="row" style="background-color: lightpink">
+      <div id="json" class="col-md-12"></div>
+    </div>
+
+  <form id="form" method="POST" enctype="multipart/form-data">{% csrf_token %}
     <div class="row">
       <div class="col-md-2">
         <p class="lead my-3">Выберите точность сходства:</p>
       </div>
       <div class="col-md-4">
-        <input id="shingle_len" type="number" class="js-range-slider" name="my_range" value="" />
+        <input id="my_range" type="number" class="js-range-slider" name="my_range" value="" />
       </div>
     </div>
     <div class="row mt-4 mb-4">
       <div class="col-md-6">
         <div class="form-file mb-4">
-          <input type="file" class="form-file-input" name="customFile">
+          <input type="file" id="form-file-input" class="form-file-input" name="customFile">
           <label class="form-file-label" for="currentFile">
             <span class="form-file-text">Выберите файл (pdf):</span>
             <span class="form-file-button">Обзор</span>
@@ -98,7 +102,7 @@
       </div>
       <div class="col-md-3">
           <div class="text-right">
-              <input type="checkbox" class="switch_1" name="switch_1" data-bs-toggle="tooltip" data-bs-placement="top" title="Форматированный вывод">
+              <input type="checkbox" id="switch_1" class="switch_1" name="switch_1" data-bs-toggle="tooltip" data-bs-placement="top" title="Форматированный вывод">
           </div>
       </div>
     </div>
@@ -378,20 +382,40 @@
       skin: "flat"
     });
   </script>
+{#    <script type="text/javascript">#}
+{#        jQuery(document).ready(function($) {#}
+{#            $("#form-submit").click(function () {#}
+{#                setInterval('getBarPercent()', 5000);#}
+{#            });#}
+{#        });#}
+{#        function getBarPercent() {#}
+{#            $.get("/main_bar/")#}
+{#                .done(function (data) {#}
+{#                    var status = data;#}
+{#                    $("[aria-valuenow]").html(data);#}
+{#                    $('.progress-bar').css('width', status + '%');#}
+{#                });#}
+{#        }#}
+{#    </script>#}
+
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-        jQuery(document).ready(function($) {
-            $("#form-submit").click(function () {
-                setInterval('getBarPercent()', 5000);
-            });
-        });
-        function getBarPercent() {
-            $.get("/main_bar/")
-                .done(function (data) {
-                    var status = data;
-                    $("[aria-valuenow]").html(data);
-                    $('.progress-bar').css('width', status + '%');
-                });
-        }
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+
+    <script>
+    $("#form").on("submit", function() {
+        $('#form').ajaxSubmit({
+            type: 'POST',
+            url: '/output/',
+            target: '#json',
+            {#dataType: #}
+            success: function() {
+                return 1
+                {#console.log(data)#}
+                {#$('#json').html(data);#}
+            }
+         });
+    });
     </script>
+
 {% endblock js %}

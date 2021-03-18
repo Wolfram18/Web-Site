@@ -1,5 +1,6 @@
 from anti.models import Law
 from supporting.preprocessing import generate_stopwords, canonize, cut_end, cut_beginning, canonize_word
+from background_task import background
 
 iteration = 0
 

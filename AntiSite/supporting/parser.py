@@ -163,7 +163,8 @@ def check_updates(base_url):
     remove_contents(my_path)
 
 
-def main(base_url):
+def main():
+    base_url = 'https://sozd.duma.gov.ru/search?page_34F6AE40-BDF0-408A-A56E-E48511C6B618='
     my_path = "supporting/data/"
     main_url = base_url + '1'
     total_pages = get_total_count_of_pages(get_html(main_url))

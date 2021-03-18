@@ -1,6 +1,13 @@
+import json
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse
+from django.core import serializers
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_protect
 
 from anti.models import Law
 import controllers.shingles
@@ -24,42 +31,39 @@ def main(request):
 
 
 def output(request):
-    if 'my_range' in request.POST:
-        shingle_len = int(request.POST['my_range'])
-    else:
-        shingle_len = 3
-    if 'switch_1' in request.POST:
-        value = request.POST['switch_1']
-        if value == "on":
-            format_out = True
-        else:
-            format_out = False
+    shingle_len = int(request.POST.get('my_range', False))
+    value = request.POST.get('switch_1', False)
+    if value == "on":
+        format_out = True
     else:
         format_out = False
     if request.method == 'POST':
         custom_file = request.FILES.get('customFile', False)
-        if bool(custom_file):
-            fs = FileSystemStorage()
-            filename = fs.save(custom_file.name, custom_file)
-            open_file = fs.open(filename, 'rb')
-            # noinspection PyBroadException
-            try:
-                main_text = get_pdf_fitz(open_file)
-                data = controllers.shingles.main(shingle_len, main_text, format_out)
-                title = data[0]
-                percent = data[1]
-                result_str_main = data[2]
-                result_str_cmp = data[3]
-                return render(request, "index.html",
-                              {"title": title, "percent": percent, "result_str_main": result_str_main,
-                               "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
-                               "now_iteration": files.count() + 7})
-            except Exception:
-                return render(request, "index.html")
-        else:
-            return render(request, "index.html")
-    else:
-        return render(request, "index.html")
+    if bool(custom_file):
+        fs = FileSystemStorage()
+        filename = fs.save(custom_file.name, custom_file)
+        open_file = fs.open(filename, 'rb')
+        # try:
+        main_text = get_pdf_fitz(open_file)
+        data = controllers.shingles.main(shingle_len, main_text, format_out)
+        title = data[0]
+        percent = data[1]
+        result_str_main = data[2]
+        result_str_cmp = data[3]
+        json_simple = json.dumps({"percent": percent})
+        json_string = json.dumps({"title": title, "percent": percent, "result_str_main": result_str_main,
+                       "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
+                       "now_iteration": files.count() + 7})
+        # response = JsonResponse({'percent': percent})
+        return json_simple
+        # return render(request, "index.html",
+        #               {"title": title, "percent": percent, "result_str_main": result_str_main,
+        #                "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
+        #                "now_iteration": files.count() + 7})
+    #     except Exception:
+    #         return render(request, "index.html")
+    # else:
+    #     return render(request, "index.html")
 
 
 def main_bar(request):
@@ -167,3 +171,11 @@ def info(request):
 
 def error404(request):
     return render(request, "error404.html")
+
+
+
+
+
+
+
+
