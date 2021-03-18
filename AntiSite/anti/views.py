@@ -31,8 +31,8 @@ def main(request):
 
 
 def output(request):
-    shingle_len = int(request.POST.get('my_range', False))
-    value = request.POST.get('switch_1', False)
+    shingle_len = int(request.GET.get('my_range', False))
+    value = request.GET.get('switch_1', False)
     if value == "on":
         format_out = True
     else:
@@ -51,11 +51,11 @@ def output(request):
         result_str_main = data[2]
         result_str_cmp = data[3]
         json_simple = json.dumps({"percent": percent})
-        json_string = json.dumps({"title": title, "percent": percent, "result_str_main": result_str_main,
-                       "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
-                       "now_iteration": files.count() + 7})
+        # json_string = json.dumps({"title": title, "percent": percent, "result_str_main": result_str_main,
+        #                "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,
+        #                "now_iteration": files.count() + 7})
         # response = JsonResponse({'percent': percent})
-        return json_simple
+        return JsonResponse(json_simple)
         # return render(request, "index.html",
         #               {"title": title, "percent": percent, "result_str_main": result_str_main,
         #                "result_str_cmp": result_str_cmp, "shingle_len": shingle_len, "format_out": format_out,

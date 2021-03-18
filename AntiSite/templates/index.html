@@ -75,7 +75,7 @@
     </div>
 
     <div class="row" style="background-color: lightpink">
-      <div id="json" class="col-md-12"></div>
+      <div id="json_id" class="col-md-12"></div>
     </div>
 
   <form id="form" method="POST" enctype="multipart/form-data">{% csrf_token %}
@@ -407,12 +407,12 @@
         $('#form').ajaxSubmit({
             type: 'POST',
             url: '/output/',
-            target: '#json',
-            {#dataType: #}
-            success: function() {
+            target: '#json_id',
+            dataType:
+            success: function(data) {
                 return 1
-                {#console.log(data)#}
-                {#$('#json').html(data);#}
+                console.log(data)
+                $("#json_id").html('1')
             }
          });
     });
