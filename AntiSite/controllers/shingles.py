@@ -43,8 +43,7 @@ def compare_shingles(shingles_main, source):
 
 
 # список "Название закона - процентаж"
-def generate_list(shingles_main, shingle_len):
-    files = Law.objects.all()
+def generate_list(shingles_main, shingle_len, files):
     top = []
     for i in range(files.count()):
         top.append([])
@@ -162,7 +161,7 @@ def compare_for_underline_text(shingles_main, canon_main_array, main_text_array,
     return result
 
 
-def main(shingle_len, main_text, format_out):
+def main(shingle_len, main_text, format_out, files):
     delete_iteration()
     russian_stopwords = generate_stopwords()
 
@@ -172,7 +171,7 @@ def main(shingle_len, main_text, format_out):
     canon_main = canonize(cut_main_text, russian_stopwords)
     shingles_main = generate_shingles(canon_main, shingle_len)
 
-    top = generate_list(shingles_main, shingle_len)
+    top = generate_list(shingles_main, shingle_len, files)
     top7 = []
     for i in range(7):
         top7.append([])

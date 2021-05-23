@@ -90,7 +90,7 @@
     </div>
   </form>
 
-    <div class="row mb-5 pl-3 pr-3">
+    <div id="bar" class="row mb-5 pl-3 pr-3" hidden="true">
         <div class="progress container-fluid p-0">
             <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark"
                  role="progressbar"
@@ -368,14 +368,16 @@
     <script type="text/javascript">
         jQuery(document).ready(function($) {
             $("#form-submit").click(function () {
+                document.getElementById("bar").hidden = false;
                 setInterval('getBarPercent()', 5000);
             });
         });
         function getBarPercent() {
             $.get("/semantic_bar/")
                 .done(function (data) {
-                    var status = data;
-                    $("[aria-valuenow]").html(data);
+                    var max = {{ max_iteration }};
+                    var status = Math.round(data / max * 100);
+                    $("[aria-valuenow]").html(status);
                     $('.progress-bar').css('width', status + '%');
                     console.log(data);
                 });

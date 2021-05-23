@@ -116,13 +116,15 @@ def remove_contents(my_path):
             shutil.rmtree(full_path)
 
 
-def check_updates(base_url):
+def check_updates(base_url, str_beg, str_end):
+    russian_stopwords = generate_stopwords()
+
     my_path = "supporting/data/"
-    main_url = base_url + '1'
-    total_pages = get_total_count_of_pages(get_html(main_url))
+    # main_url = base_url + '1'
+    # total_pages = get_total_count_of_pages(get_html(main_url))
 
     flag = True
-    for i in range(1, total_pages):
+    for i in range(str_beg, str_end):
         if flag:
             url_gen = base_url + str(i)
             html = get_html(url_gen)
@@ -145,7 +147,6 @@ def check_updates(base_url):
         else:
             break
 
-    russian_stopwords = generate_stopwords()
     file_names = get_file_names_from_dir(my_path)
     for k in range(0, len(file_names)):
         text = get_pdf_fitz(my_path + file_names[k])
@@ -163,12 +164,14 @@ def check_updates(base_url):
     remove_contents(my_path)
 
 
-def main(base_url):
-    my_path = "supporting/data/"
-    main_url = base_url + '1'
-    total_pages = get_total_count_of_pages(get_html(main_url))
+def main(base_url, str_beg, str_end):
+    russian_stopwords = generate_stopwords()
 
-    for i in range(1, 10):
+    my_path = "supporting/data/"
+    # main_url = base_url + '1'
+    # total_pages = get_total_count_of_pages(get_html(main_url))
+
+    for i in range(str_beg, str_end):
         url_gen = base_url + str(i)
         html = get_html(url_gen)
         bills = get_bills_links_list(html)
@@ -180,24 +183,23 @@ def main(base_url):
             else:
                 continue
 
-    russian_stopwords = generate_stopwords()
-    file_names = get_file_names_from_dir(my_path)
-    for k in range(0, len(file_names)):
-        text = get_pdf_fitz(my_path + file_names[k])
-        text = delete_tag(text)
-        canon_array = canonize(cut_end(cut_beginning(text)), russian_stopwords)
-        canon_text = ""
-        for z in range(0, len(canon_array)):
-            canon_text += canon_array[z] + " "
-        canon_text = delete_irrelevant_words(canon_text)
-        try:
-            Law.objects.get(title=file_names[k].rstrip('.pdf'))
-        except Law.DoesNotExist:
-            Law.objects.create(title=file_names[k].rstrip('.pdf'), text=text, canon=canon_text)
-        except Law.MultipleObjectsReturned:
-            pass
+        file_names = get_file_names_from_dir(my_path)
+        for k in range(0, len(file_names)):
+            text = get_pdf_fitz(my_path + file_names[k])
+            text = delete_tag(text)
+            canon_array = canonize(cut_end(cut_beginning(text)), russian_stopwords)
+            canon_text = ""
+            for z in range(0, len(canon_array)):
+                canon_text += canon_array[z] + " "
+            canon_text = delete_irrelevant_words(canon_text)
+            try:
+                Law.objects.get(title=file_names[k].rstrip('.pdf'))
+            except Law.DoesNotExist:
+                Law.objects.create(title=file_names[k].rstrip('.pdf'), text=text, canon=canon_text)
+            except Law.MultipleObjectsReturned:
+                pass
 
-    remove_contents(my_path)
+        remove_contents(my_path)
 
 
 if __name__ == '__main__':

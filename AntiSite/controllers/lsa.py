@@ -110,8 +110,7 @@ def cosine_similarity(vec1, vec2):
 
 
 # список "Название закона - косинусное расстояние"
-def generate_list(canon_main):
-    files = Law.objects.all()
+def generate_list(canon_main, files):
     documents = []
     titles = []
     for i in range(files.count()):
@@ -200,7 +199,7 @@ def compare_for_underline_text(canon_main_array, main_text_array, canon_cmp_arra
     return result
 
 
-def main(main_text, format_out):
+def main(main_text, format_out, files):
     delete_iteration()
     russian_stopwords = generate_stopwords()
 
@@ -211,7 +210,7 @@ def main(main_text, format_out):
     if format_out:
         main_text_array = cut_end(cut_beginning(main_text)).split()
 
-    top = generate_list(canon_main)
+    top = generate_list(canon_main, files)
     top7 = []
     for i in range(7):
         top7.append([])

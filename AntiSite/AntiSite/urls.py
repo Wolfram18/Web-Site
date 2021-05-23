@@ -11,10 +11,9 @@ urlpatterns = [
     path('main', views.main),
     path('main.html', views.main),
     re_path(r'^main/', views.main),
-    # re_path(r'^main', views.m404),
     path('output', views.output, name="output"),
     re_path(r'^output/', views.output),
-    # re_path(r'^output', views.m404),
+    url(r'^output/', views.output),
     url(r'^main_bar/', views.main_bar),
 
     path('semantic', views.semantic, name="semantic"),
