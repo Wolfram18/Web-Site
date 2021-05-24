@@ -5,6 +5,7 @@ import math
 from anti.models import Law
 from supporting.preprocessing import generate_stopwords, canonize, cut_end, cut_beginning, canonize_word
 
+COUNT_OUTPUT = 7
 iteration = 0
 
 
@@ -201,7 +202,7 @@ def compare_for_underline_text(canon_main_array, main_text_array, canon_cmp_arra
 
 def main(main_text, format_out, files):
     delete_iteration()
-    russian_stopwords = generate_stopwords()
+    russian_stopwords = generate_stopwords('supporting/stopwords.txt')
 
     canon_main_array = canonize(cut_end(cut_beginning(main_text)), russian_stopwords)
     canon_main = ""
@@ -211,10 +212,10 @@ def main(main_text, format_out, files):
         main_text_array = cut_end(cut_beginning(main_text)).split()
 
     top = generate_list(canon_main, files)
-    top7 = []
-    for i in range(7):
-        top7.append([])
-    for i in range(7):
+    top_count = []
+    for i in range(COUNT_OUTPUT):
+        top_count.append([])
+    for i in range(COUNT_OUTPUT):
         set_iteration()
         law = Law.objects.get(title=top[len(top) - 1 - i][0])
         canon_cmp_array = law.canon.split()
@@ -225,9 +226,9 @@ def main(main_text, format_out, files):
         else:
             result_str = compare_for_underline_canon(canon_main_array, canon_cmp_array)
 
-        top7[0].append(top[len(top) - 1 - i][0])
-        top7[1].append(float("{0:.2f}".format(top[len(top) - 1 - i][1])))
-        top7[2].append(result_str[0])
-        top7[3].append(result_str[1])
+        top_count[0].append(top[len(top) - 1 - i][0])
+        top_count[1].append(float("{0:.2f}".format(top[len(top) - 1 - i][1])))
+        top_count[2].append(result_str[0])
+        top_count[3].append(result_str[1])
 
-    return top7
+    return top_count

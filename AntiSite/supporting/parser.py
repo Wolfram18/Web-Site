@@ -117,7 +117,7 @@ def remove_contents(my_path):
 
 
 def check_updates(base_url, str_beg, str_end):
-    russian_stopwords = generate_stopwords()
+    russian_stopwords = generate_stopwords('supporting/stopwords.txt')
 
     my_path = "supporting/data/"
     # main_url = base_url + '1'
@@ -154,6 +154,7 @@ def check_updates(base_url, str_beg, str_end):
         canon_text = ""
         for z in range(0, len(canon_array)):
             canon_text += canon_array[z] + " "
+        canon_text = delete_irrelevant_words(canon_text, 'supporting/irrelevant_words.txt')
         try:
             Law.objects.get(title=file_names[k].rstrip('.pdf'))
         except Law.DoesNotExist:
@@ -165,7 +166,7 @@ def check_updates(base_url, str_beg, str_end):
 
 
 def main(base_url, str_beg, str_end):
-    russian_stopwords = generate_stopwords()
+    russian_stopwords = generate_stopwords('supporting/stopwords.txt')
 
     my_path = "supporting/data/"
     # main_url = base_url + '1'
@@ -191,7 +192,9 @@ def main(base_url, str_beg, str_end):
             canon_text = ""
             for z in range(0, len(canon_array)):
                 canon_text += canon_array[z] + " "
-            canon_text = delete_irrelevant_words(canon_text)
+            canon_text = delete_irrelevant_words(canon_text, 'supporting/irrelevant_words.txt')
+            # get_or_create()
+            # Law.objects.filter(title=title).update(canon=canon_text)
             try:
                 Law.objects.get(title=file_names[k].rstrip('.pdf'))
             except Law.DoesNotExist:

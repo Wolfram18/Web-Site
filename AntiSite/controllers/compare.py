@@ -2,6 +2,8 @@ from anti.models import Law
 from controllers.shingles import generate_list, generate_shingles
 from supporting.preprocessing import generate_stopwords, canonize, cut_beginning, cut_end
 
+COUNT_OUTPUT = 7
+
 
 def compare_for_underline_canon(shingles_main, canon_main_array, canon_cmp_array, shingle_len):
     shingles_cmp = generate_shingles(canon_cmp_array, shingle_len)
@@ -68,25 +70,25 @@ def compare_for_underline_canon(shingles_main, canon_main_array, canon_cmp_array
     return result
 
 
-def main(shingle_len, main_text):
-    russian_stopwords = generate_stopwords()
+def main(shingle_len, main_text, files):
+    russian_stopwords = generate_stopwords('supporting/stopwords.txt')
 
     cut_main_text = cut_end(cut_beginning(main_text))
     canon_main = canonize(cut_main_text, russian_stopwords)
     shingles_main = generate_shingles(canon_main, shingle_len)
 
-    top = generate_list(shingles_main, shingle_len)
-    top7 = []
-    for i in range(7):
-        top7.append([])
-    for i in range(7):
+    top = generate_list(shingles_main, shingle_len, files)
+    top_count = []
+    for i in range(COUNT_OUTPUT):
+        top_count.append([])
+    for i in range(COUNT_OUTPUT):
         law = Law.objects.get(title=top[len(top) - 1 - i][0])
         canon_main_array = canonize(cut_main_text, russian_stopwords)
         canon_cmp_array = law.canon.split()
         result_str = compare_for_underline_canon(shingles_main, canon_main_array, canon_cmp_array, shingle_len)
-        top7[0].append(top[len(top) - 1 - i][0])
-        top7[1].append(top[len(top) - 1 - i][1])
-        top7[2].append(result_str[0])
-        top7[3].append(result_str[1])
+        top_count[0].append(top[len(top) - 1 - i][0])
+        top_count[1].append(top[len(top) - 1 - i][1])
+        top_count[2].append(result_str[0])
+        top_count[3].append(result_str[1])
 
-    return top7
+    return top_count

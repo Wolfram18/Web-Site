@@ -145,7 +145,7 @@ def comparison_output(request):
             # noinspection PyBroadException
             try:
                 main_text = get_pdf_fitz(open_file)
-                data = controllers.compare.main(shingle_len, main_text)
+                data = controllers.compare.main(shingle_len, main_text, files)
                 title = data[0]
                 percent = data[1]
                 result_str_main = data[2]

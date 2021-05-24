@@ -5,28 +5,28 @@ import pymorphy2
 
 # вырезать до ПОСТАНОВЛЕНИЕ и ФЕДЕРАЛЬНЫЙ ЗАКОН
 def cut_beginning(source):
-    if source.find("ПОСТАНОВЛЕНИЕ") != -1:
-        index_p = source.find("ПОСТАНОВЛЕНИЕ") + len("ПОСТАНОВЛЕНИЕ")
-    elif source.find("П О С Т А Н О В Л Е Н И Е") != -1:
-        index_p = source.find("П О С Т А Н О В Л Е Н И Е") + len("П О С Т А Н О В Л Е Н И Е")
-    else:
-        index_p = 0
+    def find_index(heading, heading_with_spaces):
+        find_index_head = source.find(heading)
+        find_index_head_spaces = source.find(heading_with_spaces)
+        if find_index_head != -1:
+            index = find_index_head + len(heading)
+        elif find_index_head_spaces != -1:
+            index = find_index_head_spaces + len(heading_with_spaces)
+        else:
+            index = 0
+        return index
 
-    if source.find("ФЕДЕРАЛЬНЫЙ ЗАКОН") != -1:
-        index_f = source.find("ФЕДЕРАЛЬНЫЙ ЗАКОН") + len("ФЕДЕРАЛЬНЫЙ ЗАКОН")
-    elif source.find("Ф Е Д Е Р А Л Ь Н Ы Й З А К О Н") != -1:
-        index_f = source.find("Ф Е Д Е Р А Л Ь Н Ы Й З А К О Н") + len("Ф Е Д Е Р А Л Ь Н Ы Й З А К О Н")
-    else:
-        index_f = 0
+    index_res = find_index("ПОСТАНОВЛЕНИЕ", "П О С Т А Н О В Л Е Н И Е")
+    index_fed = find_index("ФЕДЕРАЛЬНЫЙ ЗАКОН", "Ф Е Д Е Р А Л Ь Н Ы Й З А К О Н")
 
-    if index_p == 0:
-        return source[index_f:]
-    elif index_f == 0:
-        return source[index_p:]
-    elif index_p > index_f:
-        return source[index_f:]
-    elif index_p < index_f:
-        return source[index_p:]
+    if index_res == 0:
+        return source[index_fed:]
+    elif index_fed == 0:
+        return source[index_res:]
+    if index_res > index_fed:
+        return source[index_fed:]
+    elif index_res < index_fed:
+        return source[index_res:]
     else:
         return source
 
@@ -37,8 +37,6 @@ def cut_end(source):
         source = source[:source.find("ПЕРЕЧЕНЬ")]
     elif source.find("П Е Р Е Ч Е Н Ь") != -1:
         source = source[:source.find("П Е Р Е Ч Е Н Ь")]
-    elif source.find("Перечень федеральных законов") != -1:
-        source = source[:source.find("Перечень федеральных законов")]
 
     if source.find("ФИНАНСОВО-ЭКОНОМИЧЕСКОЕ ОБОСНОВАНИЕ") != -1:
         source = source[:source.find("ФИНАНСОВО-ЭКОНОМИЧЕСКОЕ ОБОСНОВАНИЕ")]
@@ -46,31 +44,35 @@ def cut_end(source):
     return source
 
 
-# Добавить канонизацию
-def generate_stopwords():
-    # готовый словарь
+def generate_stopwords(config):
+    # 'supporting/stopwords.txt'
+    # базовый словарь
     from nltk.corpus import stopwords
     russian_stopwords = stopwords.words("russian")
 
-    # наш словарь
-    line = open('supporting/stopwords.txt', encoding='utf-8').read()
-    words = line.split()
-    russian_stopwords.extend(words)
+    # расширение словаря
+    try:
+        file = open(config, encoding='utf-8')
+        line = file.read()
+        words = line.split()
+        russian_stopwords.extend(words)
+    except IOError:
+        raise IOError("File 'stopwords' does not exist!")
 
     return russian_stopwords
 
 
 def canonize(source, russian_stopwords):
-    # приводим к нижнему регистру
+    # приведение к нижнему регистру
     source = source.lower()
     # print('Нижний регистр:', source)
 
-    # удаляем пунктуацию и цифры
+    # удаление пунктуации и цифр
     spec_chars = string.punctuation + string.digits + '\n\r\t\xa0№«»—…„'
     source = "".join([ch for ch in source if ch not in spec_chars])
     # print('Без символов:', source)
 
-    # разбиваем и удаляем стоп слова
+    # токенизация и удаление стоп-слов
     from nltk.tokenize import word_tokenize
     source = [x for x in word_tokenize(source, language="russian") if x not in russian_stopwords]
     # print('Без стоп-слов:', source)
@@ -83,23 +85,6 @@ def canonize(source, russian_stopwords):
     return source
 
 
-def delete_irrelevant_words(source):
-    line = open('supporting/irrelevant_words.txt', encoding='utf-8').read()
-    irrelevant_words = line.split('\n')
-    for word in irrelevant_words:
-        source = source.replace(word, '')
-
-    return source
-
-
-def delete_tag(source):
-    tags = ['</', '/>', '</>']
-    for tag in tags:
-        source = source.replace(tag, '')
-
-    return source
-
-
 def canonize_word(word):
     word = word.lower()
     spec_chars = string.punctuation + string.digits + '\n\r\t\xa0№«»—…„'
@@ -108,3 +93,25 @@ def canonize_word(word):
     word = morph.parse(word)[0].normal_form
 
     return word
+
+
+def delete_irrelevant_words(source, config):
+    # 'supporting/irrelevant_words.txt'
+    try:
+        file = open(config, encoding='utf-8')
+        line = file.read()
+        irrelevant_words = line.split('\n')
+        for word in irrelevant_words:
+            source = source.replace(word, '')
+    except IOError:
+        raise IOError("File 'irrelevant_words' does not exist!")
+
+    return source
+
+
+def delete_tag(source):
+    tags = ['</>', '</', '/>']
+    for tag in tags:
+        source = source.replace(tag, '')
+
+    return source
