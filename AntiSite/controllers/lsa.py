@@ -174,7 +174,7 @@ def compare_for_underline_canon(canon_main_array, canon_cmp_array):
     equal_words_main = _make_equal_words(canon_main_array, canon_cmp_array)
     result_str_main = get_string(canon_main_array, equal_words_main)
 
-    # при совпадении делаем капс <mark> canon_cmp
+    # при совпадении делаем <mark> canon_cmp
     equal_words_cmp = _make_equal_words(canon_cmp_array, canon_main_array)
     result_str_cmp = get_string(canon_cmp_array, equal_words_cmp)
 
