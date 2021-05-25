@@ -24,7 +24,8 @@ def get_iteration():
     return iteration
 
 
-# словарь слов (ключ - слово, значение - индекс в векторе)
+# генерация словаря уникальных слов
+# (ключ - слово, значение - индекс в векторе)
 def build_terms(documents):
     terms = {}
     current_index = 0
@@ -48,7 +49,10 @@ def make_tf(document, terms):
 
     for word in doc_counter:
         # Можно и не делить, а оставить как есть, с частотой
-        doc_counter[word] /= total_words
+        try:
+            doc_counter[word] /= total_words
+        except ZeroDivisionError:
+            doc_counter[word] = 0
 
     # сопоставление tf и индекса слова в векторе
     tfs = [0 for _ in range(len(terms))]
@@ -66,7 +70,11 @@ def make_idf(documents, terms):
         docs_with_word = _count_docs_with_word(word, documents)
         # Основание логарифма не имеет значения
         # Без отрицательных значений, только положительные
-        idf = 1 + math.log10(total_docs / docs_with_word)
+        try:
+            idf = 1 + math.log10(total_docs / docs_with_word)
+        except ZeroDivisionError:
+            idf = 1 + math.log10(total_docs / 1)
+
         # сопоставление idf и индекса слова в векторе
         idfs[index] = idf
 
@@ -74,7 +82,7 @@ def make_idf(documents, terms):
 
 
 def _count_docs_with_word(word, docs):
-    counter = 1
+    counter = 0
     for doc in docs:
         if word in doc:
             counter += 1
