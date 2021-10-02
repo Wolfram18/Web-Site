@@ -1,6 +1,7 @@
 # nltk.download()
 import string
 import pymorphy2
+from supporting.reading import get_stopwords_config, get_irrelevant_words_config
 
 
 # вырезать до ПОСТАНОВЛЕНИЕ и ФЕДЕРАЛЬНЫЙ ЗАКОН
@@ -51,13 +52,9 @@ def generate_stopwords(config):
     russian_stopwords = stopwords.words("russian")
 
     # расширение словаря
-    try:
-        file = open(config, encoding='utf-8')
-        line = file.read()
-        words = line.split()
-        russian_stopwords.extend(words)
-    except IOError:
-        raise IOError("File 'stopwords' does not exist!")
+    line = get_stopwords_config(config)
+    words = line.split()
+    russian_stopwords.extend(words)
 
     return russian_stopwords
 
@@ -97,14 +94,10 @@ def canonize_word(word):
 
 def delete_irrelevant_words(source, config):
     # 'supporting/irrelevant_words.txt'
-    try:
-        file = open(config, encoding='utf-8')
-        line = file.read()
-        irrelevant_words = line.split('\n')
-        for word in irrelevant_words:
-            source = source.replace(word, '')
-    except IOError:
-        raise IOError("File 'irrelevant_words' does not exist!")
+    line = get_irrelevant_words_config(config)
+    irrelevant_words = line.split('\n')
+    for word in irrelevant_words:
+        source = source.replace(word, '')
 
     return source
 

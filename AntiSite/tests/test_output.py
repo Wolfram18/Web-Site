@@ -19,65 +19,40 @@ def generate_stopwords_for_test():
     return russian_stopwords
 
 
-class TestUnderlineCanon(TestCase):
-    def test_true_compare(self):
-        canon_main_array = ["внесение", "изменение", "судебный", "производство"]
-        canon_cmp_array = ["внесение", "изменение", "статья", "библиотечный", "производство", "организация"]
-        result = compare_for_underline_canon(canon_main_array, canon_cmp_array)
-        expected = ("<mark>внесение</mark> <mark>изменение</mark> "
-                    "судебный <mark>производство</mark> ",
-                    "<mark>внесение</mark> <mark>изменение</mark> статья "
-                    "библиотечный <mark>производство</mark> организация ")
-        self.assertEqual(result, expected)
+class TestOutput(TestCase):
+    def test_underline_canon(self):
+        canon_main_array = [["внесение", "изменение", "судебный", "производство"], [],
+                            ["внесение", "изменение", "статья", "библиотечный", "производство", "организация"]]
+        canon_cmp_array = [["внесение", "изменение", "статья", "библиотечный", "производство", "организация"],
+                           ["внесение", "изменение", "статья", "библиотечный", "производство", "организация"], []]
+        expected = [("<mark>внесение</mark> <mark>изменение</mark> "
+                     "судебный <mark>производство</mark> ",
+                     "<mark>внесение</mark> <mark>изменение</mark> статья "
+                     "библиотечный <mark>производство</mark> организация "),
+                    ("", "внесение изменение статья библиотечный производство организация "),
+                    ("внесение изменение статья библиотечный производство организация ", "")]
+        for i in range(len(canon_main_array)):
+            result = compare_for_underline_canon(canon_main_array[i], canon_cmp_array[i])
+        self.assertEqual(result, expected[i])
 
-    def test_empty_main_array(self):
-        canon_main_array = []
-        canon_cmp_array = ["внесение", "изменение", "статья", "библиотечный", "производство", "организация"]
-        result = compare_for_underline_canon(canon_main_array, canon_cmp_array)
-        expected = ("", "внесение изменение статья библиотечный производство организация ")
-        self.assertEqual(result, expected)
-
-    def test_empty_cmp_array(self):
-        canon_main_array = ["внесение", "изменение", "статья", "библиотечный", "производство", "организация"]
-        canon_cmp_array = []
-        result = compare_for_underline_canon(canon_main_array, canon_cmp_array)
-        expected = ("внесение изменение статья библиотечный производство организация ", "")
-        self.assertEqual(result, expected)
-
-
-class TestUnderlineText(TestCase):
-    def test_true_compare(self):
-        canon_main_array = ['внесение', 'изменение', 'статья', 'федеральный', 'закон', 'ветеран']
-        main_text_array = ['О', 'внесении', 'изменения', 'в', 'статью', '7',
-                           'Федерального', 'закона', '«О', 'ветеранах»']
-        canon_cmp_array = ['внесение', 'изменение', 'трудовой', 'кодекс', 'российский', 'федерация']
-        text_cmp = "О внесении изменений в Трудовой кодекс Российской Федерации"
+    def test_underline_text(self):
         russian_stopwords = generate_stopwords_for_test()
-        result = compare_for_underline_text(canon_main_array, main_text_array,
-                                            canon_cmp_array, text_cmp, russian_stopwords)
-        expected = ("О <mark>внесении</mark> <mark>изменения</mark> в статью 7 Федерального закона «О ветеранах» ",
-                    "О <mark>внесении</mark> <mark>изменений</mark> в Трудовой кодекс Российской Федерации ")
-        self.assertEqual(result, expected)
-
-    def test_empty_main(self):
-        canon_main_array = []
-        main_text_array = []
-        canon_cmp_array = ['внесение', 'изменение', 'трудовой', 'кодекс', 'российский', 'федерация']
-        text_cmp = "О внесении изменений в Трудовой кодекс Российской Федерации"
-        russian_stopwords = generate_stopwords_for_test()
-        result = compare_for_underline_text(canon_main_array, main_text_array,
-                                            canon_cmp_array, text_cmp, russian_stopwords)
-        expected = ("", "О внесении изменений в Трудовой кодекс Российской Федерации ")
-        self.assertEqual(result, expected)
-
-    def test_empty_cmp(self):
-        canon_main_array = ['внесение', 'изменение', 'статья', 'федеральный', 'закон', 'ветеран']
-        main_text_array = ['О', 'внесении', 'изменения', 'в', 'статью', '7',
-                           'Федерального', 'закона', '«О', 'ветеранах»']
-        canon_cmp_array = []
-        text_cmp = ""
-        russian_stopwords = generate_stopwords_for_test()
-        result = compare_for_underline_text(canon_main_array, main_text_array,
-                                            canon_cmp_array, text_cmp, russian_stopwords)
-        expected = ("О внесении изменения в статью 7 Федерального закона «О ветеранах» ", "")
-        self.assertEqual(result, expected)
+        canon_main_array = [['внесение', 'изменение', 'статья', 'федеральный', 'закон', 'ветеран'], [],
+                            ['внесение', 'изменение', 'статья', 'федеральный', 'закон', 'ветеран']]
+        main_text_array = [['О', 'внесении', 'изменения', 'в', 'статью', '7',
+                           'Федерального', 'закона', '«О', 'ветеранах»'], [],
+                           ['О', 'внесении', 'изменения', 'в', 'статью', '7',
+                            'Федерального', 'закона', '«О', 'ветеранах»']]
+        canon_cmp_array = [['внесение', 'изменение', 'трудовой', 'кодекс', 'российский', 'федерация'],
+                           ['внесение', 'изменение', 'трудовой', 'кодекс', 'российский', 'федерация'],
+                           []]
+        text_cmp = ["О внесении изменений в Трудовой кодекс Российской Федерации",
+                    "О внесении изменений в Трудовой кодекс Российской Федерации", ""]
+        expected = [("О <mark>внесении</mark> <mark>изменения</mark> в статью 7 Федерального закона «О ветеранах» ",
+                    "О <mark>внесении</mark> <mark>изменений</mark> в Трудовой кодекс Российской Федерации "),
+                    ("", "О внесении изменений в Трудовой кодекс Российской Федерации "),
+                    ("О внесении изменения в статью 7 Федерального закона «О ветеранах» ", "")]
+        for i in range(len(canon_main_array)):
+            result = compare_for_underline_text(canon_main_array[i], main_text_array[i],
+                                                canon_cmp_array[i], text_cmp[i], russian_stopwords)
+            self.assertEqual(result, expected[i])

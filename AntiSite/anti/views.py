@@ -5,11 +5,10 @@ from django.shortcuts import render
 import controllers.compare
 import controllers.lsa
 import controllers.shingles
-from anti.models import Law
-from controllers.search import get_law_by_title
+from supporting.reading import get_law_by_title, get_all_laws
 from supporting.parser import get_pdf_fitz
 
-files = Law.objects.all()
+files = get_all_laws()
 
 
 def main(request):
@@ -88,7 +87,7 @@ def semantic_output(request):
             # noinspection PyBroadException
             try:
                 main_text = get_pdf_fitz(open_file)
-                data = controllers.lsa.main(main_text, format_out, files)
+                data = controllers.lsa.lsa_main(main_text, format_out, files)
                 title = data[0]
                 percent = data[1]
                 result_str_main = data[2]
@@ -116,13 +115,8 @@ def search(request):
 def search_output(request):
     if 'find' in request.POST:
         law_index = request.POST['find']
-        try:
-            text = get_law_by_title(law_index)
-            return render(request, "search.html", {"text": text})
-        except Law.DoesNotExist:
-            return render(request, "search.html", {"text": "Документ с таким индексом не найден"})
-        except Law.MultipleObjectsReturned:
-            return render(request, "search.html", {"text": "Ошибка: Несколько документов с таким индексом"})
+        text = get_law_by_title(law_index)
+        return render(request, "search.html", {"text": text})
     else:
         return render(request, "search.html")
 
